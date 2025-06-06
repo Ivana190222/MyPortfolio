@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Container,
   Grid,
@@ -21,7 +22,10 @@ import {
   Menu,
   MenuItem,
   ListItemAvatar,
-  useTheme
+  useTheme,
+  CircularProgress,
+  Alert,
+  Snackbar
 } from '@mui/material';
 import { 
   Favorite, 
@@ -34,79 +38,41 @@ import {
   Delete
 } from '@mui/icons-material';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+
 const Posts = () => {
   const theme = useTheme();
   const [selectedPost, setSelectedPost] = useState(null);
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "Proyecto Web GymAcgym",
-      image: "/proyecto-gym.jpeg",
-      description: "Este proyecto es un sitio web dinámico y profesional creado para ACGym, un gimnasio centrado en promover la salud como la verdadera riqueza. Implementé un sistema de gestión de clases y turnos, utilizando HTML, CSS, JS para el frontend y Node.js con Mysql para el backend.",
-      date: "2023 - Presente",
-      repoUrl: "https://github.com/Ivana190222/GimnasioAcgym-web",
-      likes: 0,
-      liked: false,
-      comments: []
-    },
-    {
-      id: 2,
-      title: "Proyecto Lux Line Cosméticos",
-      image: "/lux_line.png",
-      description: "Desarrollo de una plataforma e-commerce completa para Lux Line Cosméticos con carrito de compras, gestión de inventario, integración de pagos y panel de administración. El frontend está desarrollado con HTML, CSS, Bootstrap, mientras que el backend utiliza Node.js, Express y MySQL.",
-      date: "2022 - 2023",
-      repoUrl: "https://github.com/Ivana190222/tienda_cosmeticos",
-      likes: 0,
-      liked: false,
-      comments: []
-    },
-    {
-      id: 3,
-      title: "Proyecto Astro Destinos",
-      image: "/DestinoAstral.png",
-      description: "AstroDestinos es una aplicación web inmersiva y visualmente impactante desarrollada con tecnologías modernas para ofrecer a los usuarios una experiencia completa en el mundo de la astrología, el tarot y las prácticas esotéricas. El objetivo principal ha sido crear una plataforma elegante y fácil de usar que proporcione información personalizada sobre cartas astrales, compatibilidad zodiacal, lecturas de tarot y horóscopos diarios, todo ello con una interfaz de usuario atractiva y animaciones fluidas.",
-      date: "2022 - 2023",
-      repoUrl: "https://github.com/Ivana190222/astro-destinos",
-      likes: 0,
-      liked: false,
-      comments: []
-    },
-    {
-      id: 4,
-      title: "Proyecto Carrito con React",
-      image: "/proyecto%20carrito%20con%20react.png",
-      description: `Este proyecto es una tienda online de productos de maquillaje creada con React, y sus características principales son:
-      Catálogo de productos: Visualiza todos los productos de maquillaje disponibles
-      Detalle de producto: Información completa de cada producto
-      Carrito de compras: Agrega productos y gestiona tu carrito
-      Diseño responsive: Se adapta a cualquier dispositivo (celular, tablet, computadora)
-      Panel de administración: Gestiona los productos (agregar, eliminar)`,
-      date: "2022 - 2023",
-      repoUrl: "https://github.com/Ivana190222/Proyecto_Final-IMH",
-      likes: 0,
-      liked: false,
-      comments: []
-    },
-    {
-      id: 5,
-      title: "Proyecto Institución Educativa CENS 454",
-      image: "/cens454.png",
-      description: `El sitio web del CENS 454 fue desarrollado para proporcionar información relevante sobre nuestra institución educativa, incluyendo:
-Información general sobre el CENS 454
-Nuestra misión, visión y valores
-Galería de imágenes
-Palabras de la Directora
-Información de contacto y formulario para consultas`,
-      repoUrl: "https://github.com/Ivana190222/cens454-frontend",
-      likes: 0,
-      liked: false,
-      comments: []
-    }
-  ]);
-  
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [commentAnchorEl, setCommentAnchorEl] = useState(null);
   const [selectedComment, setSelectedComment] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  // Cargar posts al montar el componente
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/posts`);
+      setPosts(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      setError('No se pudieron cargar los proyectos. Por favor, intenta de nuevo más tarde.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePostClick = (post) => {
     setSelectedPost(post);
@@ -117,53 +83,98 @@ Información de contacto y formulario para consultas`,
     setNewComment("");
   };
   
-  const handleLike = (postId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        const liked = !post.liked;
-        return {
-          ...post,
-          liked,
-          likes: liked ? post.likes + 1 : post.likes - 1
-        };
+  const handleLike = async (postId) => {
+    try {
+      const response = await axios.post(`${API_URL}/posts/${postId}/like`);
+      
+      if (response.data.success) {
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              liked: response.data.liked,
+              likes: response.data.liked ? post.likes + 1 : post.likes - 1
+            };
+          }
+          return post;
+        }));
+        
+        // Si el post seleccionado es el que se le dio like, actualizarlo también
+        if (selectedPost && selectedPost.id === postId) {
+          setSelectedPost(prev => ({
+            ...prev,
+            liked: response.data.liked,
+            likes: response.data.liked ? prev.likes + 1 : prev.likes - 1
+          }));
+        }
       }
-      return post;
-    }));
+    } catch (err) {
+      console.error('Error dando like:', err);
+      setSnackbar({
+        open: true,
+        message: 'No se pudo procesar el like. Intenta de nuevo.',
+        severity: 'error'
+      });
+    }
   };
   
   const handleCommentChange = (e) => {
     setNewComment(e.target.value);
   };
   
-  const handleAddComment = (postId) => {
+  const handleAddComment = async (postId) => {
     if (newComment.trim() === "") return;
     
-    const now = new Date();
-    const formattedDate = `${now.getDate()} ${now.toLocaleString('default', { month: 'short' })} ${now.getFullYear()}`;
-    
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        const newCommentObj = {
-          id: post.comments.length + 1,
-          author: "Tú",
-          avatar: "/ivana-photo.jpeg",
-          text: newComment,
-          date: formattedDate,
-          isYours: true
-        };
+    try {
+      const response = await axios.post(`${API_URL}/posts/${postId}/comment`, {
+        author: "Visitante",
+        text: newComment,
+        avatar_url: "/ivana-photo.jpeg"
+      });
+      
+      if (response.data.success) {
+        const newCommentObj = response.data.comment;
+        newCommentObj.isYours = true;
         
-        return {
-          ...post,
-          comments: [...post.comments, newCommentObj]
-        };
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              commentsData: post.commentsData ? [...post.commentsData, newCommentObj] : [newCommentObj],
+              commentsData: post.commentsData ? [...post.commentsData, newCommentObj] : [newCommentObj]
+            };
+          }
+          return post;
+        }));
+        
+        // Actualizar el post seleccionado si es el que recibe el comentario
+        if (selectedPost && selectedPost.id === postId) {
+          setSelectedPost(prev => ({
+            ...prev,
+            commentsData: prev.commentsData ? [...prev.commentsData, newCommentObj] : [newCommentObj],
+            commentsData: prev.commentsData ? [...prev.commentsData, newCommentObj] : [newCommentObj]
+          }));
+        }
+        
+        setNewComment("");
+        setSnackbar({
+          open: true,
+          message: '¡Comentario añadido correctamente!',
+          severity: 'success'
+        });
       }
-      return post;
-    }));
-    
-    setNewComment("");
+    } catch (err) {
+      console.error('Error al añadir comentario:', err);
+      setSnackbar({
+        open: true,
+        message: 'No se pudo añadir el comentario. Intenta de nuevo.',
+        severity: 'error'
+      });
+    }
   };
 
   const handleCommentMenuOpen = (event, comment) => {
+    event.stopPropagation();
     setCommentAnchorEl(event.currentTarget);
     setSelectedComment(comment);
   };
@@ -174,20 +185,52 @@ Información de contacto y formulario para consultas`,
   };
 
   const handleDeleteComment = () => {
+    // Aquí iría la llamada a la API para eliminar el comentario
+    // Por ahora solo lo eliminamos del estado local
     if (!selectedComment || !selectedPost) return;
     
     setPosts(posts.map(post => {
       if (post.id === selectedPost.id) {
         return {
           ...post,
-          comments: post.comments.filter(comment => comment.id !== selectedComment.id)
+          commentsData: post.commentsData.filter(comment => comment.id !== selectedComment.id)
         };
       }
       return post;
     }));
     
+    setSelectedPost(prev => ({
+      ...prev,
+      commentsData: prev.commentsData.filter(comment => comment.id !== selectedComment.id)
+    }));
+    
     handleCommentMenuClose();
+    setSnackbar({
+      open: true,
+      message: 'Comentario eliminado correctamente',
+      severity: 'success'
+    });
   };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({...snackbar, open: false});
+  };
+
+  if (loading) {
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container sx={{ mt: 10 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ mt: 10, mb: 4 }}>
@@ -223,7 +266,7 @@ Información de contacto y formulario para consultas`,
               <CardMedia
                 component="img"
                 height="320"
-                image={post.image}
+                image={post.image_url || post.image}
                 alt={post.title}
                 sx={{ objectFit: 'cover' }}
               />
@@ -272,11 +315,11 @@ Información de contacto y formulario para consultas`,
               </IconButton>
             </DialogTitle>
             <DialogContent sx={{ p: 0, bgcolor: 'white' }}>
-              <Grid container spacing={0}>
+              <Grid container>
                 <Grid item xs={12} md={7} sx={{ position: 'relative' }}>
                   <CardMedia
                     component="img"
-                    image={selectedPost.image}
+                    image={selectedPost.image_url || selectedPost.image}
                     alt={selectedPost.title}
                     sx={{ 
                       width: '100%', 
@@ -305,7 +348,9 @@ Información de contacto y formulario para consultas`,
                         color="text.secondary"
                         sx={{ fontFamily: 'Nunito, sans-serif' }}
                       >
-                        {selectedPost.date}
+                        {selectedPost.date_start ? 
+                          new Date(selectedPost.date_start).toLocaleDateString('es-ES', {year: 'numeric', month: 'long'}) : 
+                          selectedPost.date}
                       </Typography>
                     </Box>
 
@@ -361,7 +406,7 @@ Información de contacto y formulario para consultas`,
                           <Comment />
                         </IconButton>
                         <Typography variant="body2" sx={{ fontFamily: 'Nunito, sans-serif' }}>
-                          {selectedPost.comments.length}
+                          {selectedPost.commentsData ? selectedPost.commentsData.length : 0}
                         </Typography>
                       </Box>
                     </Box>
@@ -380,63 +425,81 @@ Información de contacto y formulario para consultas`,
                     </Typography>
                     
                     <List sx={{ maxHeight: 200, overflow: 'auto', mb: 2 }}>
-                      {selectedPost.comments.map((comment) => (
-                        <ListItem 
-                          key={comment.id}
-                          alignItems="flex-start"
+                      {selectedPost.commentsData && selectedPost.commentsData.length > 0 ? (
+                        selectedPost.commentsData.map((comment) => (
+                          <ListItem 
+                            key={comment.id}
+                            alignItems="flex-start"
+                            sx={{ 
+                              py: 1, 
+                              px: 2,
+                              borderRadius: 2,
+                              mb: 1,
+                              backgroundColor: 'rgba(255, 107, 152, 0.05)'
+                            }}
+                            secondaryAction={
+                              comment.isYours && (
+                                <IconButton 
+                                  edge="end" 
+                                  size="small"
+                                  onClick={(e) => handleCommentMenuOpen(e, comment)}
+                                >
+                                  <MoreVert fontSize="small" />
+                                </IconButton>
+                              )
+                            }
+                          >
+                            <ListItemAvatar>
+                              <Avatar src={comment.avatar_url} alt={comment.author} />
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={
+                                <Typography 
+                                  variant="subtitle2" 
+                                  component="span"
+                                  sx={{ fontFamily: 'Nunito, sans-serif', fontWeight: 'bold' }}
+                                >
+                                  {comment.author}
+                                </Typography>
+                              }
+                              secondary={
+                                <>
+                                  <Typography 
+                                    variant="body2" 
+                                    component="span" 
+                                    sx={{ display: 'block', fontFamily: 'Nunito, sans-serif' }}
+                                  >
+                                    {comment.text}
+                                  </Typography>
+                                  <Typography 
+                                    variant="caption" 
+                                    color="text.secondary"
+                                    sx={{ fontFamily: 'Nunito, sans-serif' }}
+                                  >
+                                    {new Date(comment.created_at).toLocaleDateString('es-ES', {
+                                      year: 'numeric', 
+                                      month: 'short', 
+                                      day: 'numeric'
+                                    })}
+                                  </Typography>
+                                </>
+                              }
+                            />
+                          </ListItem>
+                        ))
+                      ) : (
+                        <Typography 
+                          variant="body2" 
                           sx={{ 
-                            py: 1, 
-                            px: 2,
-                            borderRadius: 2,
-                            mb: 1,
-                            backgroundColor: 'rgba(255, 107, 152, 0.05)'
+                            textAlign: 'center', 
+                            fontStyle: 'italic',
+                            color: 'text.secondary',
+                            py: 2
                           }}
-                          secondaryAction={
-                            comment.isYours && (
-                              <IconButton 
-                                edge="end" 
-                                size="small"
-                                onClick={(e) => handleCommentMenuOpen(e, comment)}
-                              >
-                                <MoreVert fontSize="small" />
-                              </IconButton>
-                            )
-                          }
                         >
-                          <ListItemAvatar>
-                            <Avatar src={comment.avatar} alt={comment.author} />
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={
-                              <Typography 
-                                variant="subtitle2" 
-                                component="span"
-                                sx={{ fontFamily: 'Nunito, sans-serif', fontWeight: 'bold' }}
-                              >
-                                {comment.author}
-                              </Typography>
-                            }
-                            secondary={
-                              <>
-                                <Typography 
-                                  variant="body2" 
-                                  component="span" 
-                                  sx={{ display: 'block', fontFamily: 'Nunito, sans-serif' }}
-                                >
-                                  {comment.text}
-                                </Typography>
-                                <Typography 
-                                  variant="caption" 
-                                  color="text.secondary"
-                                  sx={{ fontFamily: 'Nunito, sans-serif' }}
-                                >
-                                  {comment.date}
-                                </Typography>
-                              </>
-                            }
-                          />
-                        </ListItem>
-                      ))}
+                          No hay comentarios aún. ¡Sé el primero en comentar!
+                        </Typography>
+                      )}
                     </List>
                     
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -484,6 +547,17 @@ Información de contacto y formulario para consultas`,
           <ListItemText>Eliminar comentario</ListItemText>
         </MenuItem>
       </Menu>
+
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

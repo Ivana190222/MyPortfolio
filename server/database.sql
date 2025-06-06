@@ -30,6 +30,27 @@ CREATE TABLE IF NOT EXISTS posts (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabla de comentarios
+CREATE TABLE IF NOT EXISTS post_comments (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  post_id INT NOT NULL,
+  author VARCHAR(100) NOT NULL,
+  text TEXT NOT NULL,
+  avatar_url VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+-- Tabla de likes
+CREATE TABLE IF NOT EXISTS post_likes (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  post_id INT NOT NULL,
+  user_ip VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_like (post_id, user_ip)
+);
+
 -- Tabla de destacados (para habilidades y certificaciones)
 CREATE TABLE IF NOT EXISTS highlights (
   id INT PRIMARY KEY AUTO_INCREMENT,
