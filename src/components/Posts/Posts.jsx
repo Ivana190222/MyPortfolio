@@ -136,12 +136,16 @@ const Posts = () => {
         const newCommentObj = response.data.comment;
         newCommentObj.isYours = true;
         
+        // Actualizar la lista de posts
         setPosts(posts.map(post => {
           if (post.id === postId) {
+            const updatedComments = post.commentsData ? 
+              [...post.commentsData, newCommentObj] : 
+              [newCommentObj];
+            
             return {
               ...post,
-              commentsData: post.commentsData ? [...post.commentsData, newCommentObj] : [newCommentObj],
-              commentsData: post.commentsData ? [...post.commentsData, newCommentObj] : [newCommentObj]
+              commentsData: updatedComments
             };
           }
           return post;
@@ -149,10 +153,13 @@ const Posts = () => {
         
         // Actualizar el post seleccionado si es el que recibe el comentario
         if (selectedPost && selectedPost.id === postId) {
+          const updatedComments = selectedPost.commentsData ? 
+            [...selectedPost.commentsData, newCommentObj] : 
+            [newCommentObj];
+          
           setSelectedPost(prev => ({
             ...prev,
-            commentsData: prev.commentsData ? [...prev.commentsData, newCommentObj] : [newCommentObj],
-            commentsData: prev.commentsData ? [...prev.commentsData, newCommentObj] : [newCommentObj]
+            commentsData: updatedComments
           }));
         }
         
