@@ -38,7 +38,72 @@ import {
   Delete
 } from '@mui/icons-material';
 
+// API URL con fallback para Netlify
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+
+// Datos de respaldo (fallback) para cuando no se pueda conectar a la API
+const FALLBACK_POSTS = [
+  {
+    id: 1,
+    title: "Proyecto Web GymAcgym",
+    image: "/proyecto-gym.jpeg",
+    image_url: "/proyecto-gym.jpeg",
+    description: "Este proyecto es un sitio web dinámico y profesional creado para ACGym, un gimnasio centrado en promover la salud como la verdadera riqueza. Implementé un sistema de gestión de clases y turnos, utilizando HTML, CSS, JS para el frontend y Node.js con Mysql para el backend.",
+    date: "2023 - Presente",
+    repoUrl: "https://github.com/Ivana190222/GimnasioAcgym-web",
+    likes: 0,
+    liked: false,
+    commentsData: []
+  },
+  {
+    id: 2,
+    title: "Proyecto Lux Line Cosméticos",
+    image: "/lux_line.png",
+    image_url: "/lux_line.png",
+    description: "Desarrollo de una plataforma e-commerce completa para Lux Line Cosméticos con carrito de compras, gestión de inventario, integración de pagos y panel de administración. El frontend está desarrollado con HTML, CSS, Bootstrap, mientras que el backend utiliza Node.js, Express y MySQL.",
+    date: "2022 - 2023",
+    repoUrl: "https://github.com/Ivana190222/tienda_cosmeticos",
+    likes: 0,
+    liked: false,
+    commentsData: []
+  },
+  {
+    id: 3,
+    title: "Proyecto Astro Destinos",
+    image: "/DestinoAstral.png",
+    image_url: "/DestinoAstral.png",
+    description: "AstroDestinos es una aplicación web inmersiva y visualmente impactante desarrollada con tecnologías modernas para ofrecer a los usuarios una experiencia completa en el mundo de la astrología, el tarot y las prácticas esotéricas. El objetivo principal ha sido crear una plataforma elegante y fácil de usar que proporcione información personalizada sobre cartas astrales, compatibilidad zodiacal, lecturas de tarot y horóscopos diarios, todo ello con una interfaz de usuario atractiva y animaciones fluidas.",
+    date: "2022 - 2023",
+    repoUrl: "https://github.com/Ivana190222/astro-destinos",
+    likes: 0,
+    liked: false,
+    commentsData: []
+  },
+  {
+    id: 4,
+    title: "Proyecto Carrito con React",
+    image: "/proyecto carrito con react.png",
+    image_url: "/proyecto carrito con react.png",
+    description: "Este proyecto es una tienda online de productos de maquillaje creada con React, y sus características principales son: Catálogo de productos: Visualiza todos los productos de maquillaje disponibles. Detalle de producto: Información completa de cada producto. Carrito de compras: Agrega productos y gestiona tu carrito. Diseño responsive: Se adapta a cualquier dispositivo (celular, tablet, computadora). Panel de administración: Gestiona los productos (agregar, eliminar).",
+    date: "2022 - 2023",
+    repoUrl: "https://github.com/Ivana190222/Proyecto_Final-IMH",
+    likes: 0,
+    liked: false,
+    commentsData: []
+  },
+  {
+    id: 5,
+    title: "Proyecto Institución Educativa CENS 454",
+    image: "/cens454.png",
+    image_url: "/cens454.png",
+    description: "El sitio web del CENS 454 fue desarrollado para proporcionar información relevante sobre nuestra institución educativa, incluyendo: Información general sobre el CENS 454. Nuestra misión, visión y valores. Galería de imágenes. Palabras de la Directora. Información de contacto y formulario para consultas.",
+    date: "2021 - 2022",
+    repoUrl: "https://github.com/Ivana190222/cens454-frontend",
+    likes: 0,
+    liked: false,
+    commentsData: []
+  }
+];
 
 const Posts = () => {
   const theme = useTheme();
@@ -54,6 +119,7 @@ const Posts = () => {
     message: '',
     severity: 'success'
   });
+  const [isNetlify, setIsNetlify] = useState(false);
 
   // Cargar posts al montar el componente
   useEffect(() => {
@@ -63,12 +129,38 @@ const Posts = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/posts`);
-      setPosts(response.data);
-      setError(null);
+      // Verificar si estamos en Netlify (URL que contiene "netlify.app")
+      const isNetlifyEnvironment = window.location.hostname.includes('netlify.app');
+      setIsNetlify(isNetlifyEnvironment);
+      
+      if (isNetlifyEnvironment) {
+        // Si estamos en Netlify, usar los datos de respaldo
+        console.log("Ejecutando en Netlify: usando datos de respaldo");
+        setPosts(FALLBACK_POSTS);
+        setError(null);
+      } else {
+        // En desarrollo o otro entorno, intentar conectar a la API
+        try {
+          const response = await axios.get(`${API_URL}/posts`);
+          if (response.data && response.data.length > 0) {
+            setPosts(response.data);
+            setError(null);
+          } else {
+            // Si la API devuelve un array vacío, usar datos de respaldo
+            setPosts(FALLBACK_POSTS);
+            setError("No se encontraron proyectos en la base de datos. Mostrando datos locales.");
+          }
+        } catch (err) {
+          console.error('Error API:', err);
+          setPosts(FALLBACK_POSTS);
+          setError("No se pudo conectar a la API. Mostrando datos locales.");
+        }
+      }
     } catch (err) {
-      console.error('Error fetching posts:', err);
-      setError('No se pudieron cargar los proyectos. Por favor, intenta de nuevo más tarde.');
+      console.error('Error general:', err);
+      // En caso de error, usar los datos de respaldo
+      setPosts(FALLBACK_POSTS);
+      setError('Usando datos locales. La API no está disponible en este momento.');
     } finally {
       setLoading(false);
     }
@@ -85,37 +177,109 @@ const Posts = () => {
   
   const handleLike = async (postId) => {
     try {
-      const response = await axios.post(`${API_URL}/posts/${postId}/like`);
-      
-      if (response.data.success) {
+      // Si estamos en Netlify, simular el like localmente
+      if (isNetlify) {
         setPosts(posts.map(post => {
           if (post.id === postId) {
+            const liked = !post.liked;
             return {
               ...post,
-              liked: response.data.liked,
-              likes: response.data.liked ? post.likes + 1 : post.likes - 1
+              liked,
+              likes: liked ? post.likes + 1 : post.likes - 1
             };
           }
           return post;
         }));
         
-        // Si el post seleccionado es el que se le dio like, actualizarlo también
         if (selectedPost && selectedPost.id === postId) {
+          const liked = !selectedPost.liked;
           setSelectedPost(prev => ({
             ...prev,
-            liked: response.data.liked,
-            likes: response.data.liked ? prev.likes + 1 : prev.likes - 1
+            liked,
+            likes: liked ? prev.likes + 1 : prev.likes - 1
           }));
         }
+        
+        setSnackbar({
+          open: true,
+          message: 'Like registrado en modo de demostración',
+          severity: 'info'
+        });
+        
+        return;
+      }
+      
+      // Si no estamos en Netlify, intentar usar la API
+      try {
+        const response = await axios.post(`${API_URL}/posts/${postId}/like`);
+        
+        if (response.data.success) {
+          setPosts(posts.map(post => {
+            if (post.id === postId) {
+              return {
+                ...post,
+                liked: response.data.liked,
+                likes: response.data.liked ? post.likes + 1 : post.likes - 1
+              };
+            }
+            return post;
+          }));
+          
+          // Si el post seleccionado es el que se le dio like, actualizarlo también
+          if (selectedPost && selectedPost.id === postId) {
+            setSelectedPost(prev => ({
+              ...prev,
+              liked: response.data.liked,
+              likes: response.data.liked ? prev.likes + 1 : prev.likes - 1
+            }));
+          }
+          
+          setSnackbar({
+            open: true,
+            message: response.data.liked ? '¡Gracias por tu like!' : 'Like removido',
+            severity: 'success'
+          });
+        }
+      } catch (apiErr) {
+        console.error('Error API like:', apiErr);
+        // Fallback: simular like localmente
+        simulateLikeLocally(postId);
       }
     } catch (err) {
-      console.error('Error dando like:', err);
-      setSnackbar({
-        open: true,
-        message: 'No se pudo procesar el like. Intenta de nuevo.',
-        severity: 'error'
-      });
+      console.error('Error general like:', err);
+      // Fallback: simular like localmente
+      simulateLikeLocally(postId);
     }
+  };
+  
+  // Función para simular like localmente cuando falla la API
+  const simulateLikeLocally = (postId) => {
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        const liked = !post.liked;
+        return {
+          ...post,
+          liked,
+          likes: liked ? post.likes + 1 : post.likes - 1
+        };
+      }
+      return post;
+    }));
+    
+    if (selectedPost && selectedPost.id === postId) {
+      const liked = !selectedPost.liked;
+      setSelectedPost(prev => ({
+        ...prev,
+        liked,
+        likes: liked ? prev.likes + 1 : prev.likes - 1
+      }));
+    }
+    
+    setSnackbar({
+      open: true,
+      message: 'Funcionando en modo local. Los cambios no se guardarán permanentemente.',
+      severity: 'info'
+    });
   };
   
   const handleCommentChange = (e) => {
@@ -126,57 +290,92 @@ const Posts = () => {
     if (newComment.trim() === "") return;
     
     try {
-      const response = await axios.post(`${API_URL}/posts/${postId}/comment`, {
-        author: "Visitante",
-        text: newComment,
-        avatar_url: "/ivana-photo.jpeg"
-      });
+      // Si estamos en Netlify, simular la adición del comentario localmente
+      if (isNetlify) {
+        simulateAddCommentLocally(postId, newComment);
+        return;
+      }
       
-      if (response.data.success) {
-        const newCommentObj = response.data.comment;
-        newCommentObj.isYours = true;
-        
-        // Actualizar la lista de posts
-        setPosts(posts.map(post => {
-          if (post.id === postId) {
-            const updatedComments = post.commentsData ? 
-              [...post.commentsData, newCommentObj] : 
-              [newCommentObj];
-            
-            return {
-              ...post,
-              commentsData: updatedComments
-            };
-          }
-          return post;
-        }));
-        
-        // Actualizar el post seleccionado si es el que recibe el comentario
-        if (selectedPost && selectedPost.id === postId) {
-          const updatedComments = selectedPost.commentsData ? 
-            [...selectedPost.commentsData, newCommentObj] : 
-            [newCommentObj];
-          
-          setSelectedPost(prev => ({
-            ...prev,
-            commentsData: updatedComments
-          }));
-        }
-        
-        setNewComment("");
-        setSnackbar({
-          open: true,
-          message: '¡Comentario añadido correctamente!',
-          severity: 'success'
+      // Si no estamos en Netlify, intentar usar la API
+      try {
+        const response = await axios.post(`${API_URL}/posts/${postId}/comment`, {
+          author: "Visitante",
+          text: newComment,
+          avatar_url: "/ivana-photo.jpeg"
         });
+        
+        if (response.data.success) {
+          const newCommentObj = response.data.comment;
+          newCommentObj.isYours = true;
+          
+          updatePostsWithNewComment(postId, newCommentObj);
+          
+          setNewComment("");
+          setSnackbar({
+            open: true,
+            message: '¡Comentario añadido correctamente!',
+            severity: 'success'
+          });
+        }
+      } catch (apiErr) {
+        console.error('Error API comentario:', apiErr);
+        // Fallback: simular comentario localmente
+        simulateAddCommentLocally(postId, newComment);
       }
     } catch (err) {
-      console.error('Error al añadir comentario:', err);
-      setSnackbar({
-        open: true,
-        message: 'No se pudo añadir el comentario. Intenta de nuevo.',
-        severity: 'error'
-      });
+      console.error('Error general comentario:', err);
+      // Fallback: simular comentario localmente
+      simulateAddCommentLocally(postId, newComment);
+    }
+  };
+  
+  // Función para simular añadir comentario localmente
+  const simulateAddCommentLocally = (postId, commentText) => {
+    const now = new Date();
+    const newCommentObj = {
+      id: Date.now(), // ID único basado en timestamp
+      author: "Visitante",
+      text: commentText,
+      avatar_url: "/ivana-photo.jpeg",
+      created_at: now.toISOString(),
+      isYours: true
+    };
+    
+    updatePostsWithNewComment(postId, newCommentObj);
+    
+    setNewComment("");
+    setSnackbar({
+      open: true,
+      message: 'Comentario añadido en modo de demostración',
+      severity: 'info'
+    });
+  };
+  
+  // Función para actualizar posts con nuevo comentario
+  const updatePostsWithNewComment = (postId, newCommentObj) => {
+    // Actualizar posts
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        const updatedComments = post.commentsData ? 
+          [...post.commentsData, newCommentObj] : 
+          [newCommentObj];
+        return {
+          ...post,
+          commentsData: updatedComments
+        };
+      }
+      return post;
+    }));
+    
+    // Actualizar post seleccionado
+    if (selectedPost && selectedPost.id === postId) {
+      const updatedComments = selectedPost.commentsData ? 
+        [...selectedPost.commentsData, newCommentObj] : 
+        [newCommentObj];
+      setSelectedPost(prev => ({
+        ...prev,
+        commentsData: updatedComments
+      }));
     }
   };
 
@@ -192,10 +391,10 @@ const Posts = () => {
   };
 
   const handleDeleteComment = () => {
-    // Aquí iría la llamada a la API para eliminar el comentario
-    // Por ahora solo lo eliminamos del estado local
     if (!selectedComment || !selectedPost) return;
     
+    // Intentar eliminar comentario a través de la API (no implementado aún)
+    // Por ahora, solo eliminamos localmente
     setPosts(posts.map(post => {
       if (post.id === selectedPost.id) {
         return {
@@ -212,10 +411,17 @@ const Posts = () => {
     }));
     
     handleCommentMenuClose();
+    
+    const message = isNetlify ? 
+      'Comentario eliminado en modo de demostración' : 
+      'Comentario eliminado correctamente';
+      
+    const severity = isNetlify ? 'info' : 'success';
+    
     setSnackbar({
       open: true,
-      message: 'Comentario eliminado correctamente',
-      severity: 'success'
+      message,
+      severity
     });
   };
 
@@ -231,16 +437,20 @@ const Posts = () => {
     );
   }
 
-  if (error) {
-    return (
-      <Container sx={{ mt: 10 }}>
-        <Alert severity="error">{error}</Alert>
-      </Container>
-    );
-  }
-
   return (
     <Container maxWidth="md" sx={{ mt: 10, mb: 4 }}>
+      {error && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
+      {isNetlify && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          Ejecutando en modo de demostración. La interactividad con likes y comentarios está simulada.
+        </Alert>
+      )}
+      
       <Typography 
         variant="h5" 
         sx={{ 
@@ -483,11 +693,12 @@ const Posts = () => {
                                     color="text.secondary"
                                     sx={{ fontFamily: 'Nunito, sans-serif' }}
                                   >
-                                    {new Date(comment.created_at).toLocaleDateString('es-ES', {
-                                      year: 'numeric', 
-                                      month: 'short', 
-                                      day: 'numeric'
-                                    })}
+                                    {comment.created_at ? 
+                                      new Date(comment.created_at).toLocaleDateString('es-ES', {
+                                        year: 'numeric', 
+                                        month: 'short', 
+                                        day: 'numeric'
+                                      }) : 'Ahora'}
                                   </Typography>
                                 </>
                               }
