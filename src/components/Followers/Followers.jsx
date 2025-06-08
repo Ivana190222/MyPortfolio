@@ -52,13 +52,14 @@ const Followers = () => {
   return (
     <Container maxWidth="md" sx={{ mt: { xs: 8, sm: 10 }, mb: 4, px: { xs: 2, sm: 3 } }}>
       <Typography 
-        variant="h5" 
+        variant="h4" 
         sx={{ 
           mb: 4, 
-          fontWeight: 'medium', 
-          textAlign: { xs: 'center', sm: 'left' },
+          fontWeight: 'bold', 
+          textAlign: 'center',
           fontFamily: 'Pacifico, cursive',
-          color: theme.palette.primary.main
+          color: theme.palette.primary.main,
+          fontSize: '2.5rem'
         }}
       >
         Referencias Profesionales
@@ -72,11 +73,11 @@ const Followers = () => {
                 mb: 3, 
                 overflow: 'hidden',
                 borderRadius: 4,
-                boxShadow: '0 8px 20px rgba(0,0,0,0.06)',
+                boxShadow: '0 8px 20px rgba(255, 107, 152, 0.25)',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-5px)',
-                  boxShadow: '0 12px 25px rgba(0,0,0,0.1)'
+                  boxShadow: '0 12px 25px rgba(255, 107, 152, 0.4)'
                 }
               }}
             >
@@ -120,7 +121,8 @@ const Followers = () => {
                           sx={{ 
                             fontFamily: 'Nunito, sans-serif',
                             fontWeight: 600,
-                            color: theme.palette.primary.dark
+                            color: theme.palette.primary.dark,
+                            fontSize: '1.3rem'
                           }}
                         >
                           {follower.name}
@@ -132,7 +134,7 @@ const Followers = () => {
                           sx={{ 
                             wordBreak: 'break-word',
                             mt: 0.5,
-                            fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                            fontSize: { xs: '0.85rem', sm: '0.9rem' },
                             fontFamily: 'Nunito, sans-serif'
                           }}
                         >
@@ -230,7 +232,7 @@ const Followers = () => {
                       sx={{ 
                         mt: 1,
                         textAlign: { xs: 'center', sm: 'left' },
-                        fontSize: { xs: '0.85rem', sm: '0.9rem' },
+                        fontSize: { xs: '0.9rem', sm: '1rem' },
                         lineHeight: 1.6,
                         fontFamily: 'Nunito, sans-serif'
                       }}

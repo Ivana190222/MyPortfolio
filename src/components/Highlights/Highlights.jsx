@@ -83,13 +83,14 @@ const Highlights = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 10, mb: 4 }}>
       <Typography 
-        variant="h5" 
+        variant="h4" 
         sx={{ 
           mb: 4, 
-          fontWeight: 'medium',
+          fontWeight: 'bold',
           fontFamily: 'Pacifico, cursive',
           color: theme.palette.primary.main,
-          textAlign: { xs: 'center', md: 'left' }
+          textAlign: 'center',
+          fontSize: '2.5rem'
         }}
       >
         Historias Destacadas
@@ -119,13 +120,13 @@ const Highlights = () => {
                   fontSize: '2rem',
                   border: '3px solid #fff',
                   boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
-                  backgroundColor: '#fff0f6'
+                  backgroundColor: 'rgba(255, 107, 152, 0.15)'
                 }}
               >
                 {highlight.icon}
               </Avatar>
               <Typography
-                variant="caption"
+                variant="subtitle2"
                 align="center"
                 sx={{
                   maxWidth: '100%',
@@ -133,7 +134,8 @@ const Highlights = () => {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   fontFamily: 'Nunito, sans-serif',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  fontSize: '1rem'
                 }}
               >
                 {highlight.title}
@@ -165,7 +167,8 @@ const Highlights = () => {
                 fontFamily: 'Pacifico, cursive',
                 textAlign: 'center',
                 position: 'relative',
-                py: 2
+                py: 2,
+                fontSize: '1.5rem'
               }}
             >
               {selectedHighlight.title}
@@ -185,7 +188,7 @@ const Highlights = () => {
             
             <DialogContent
               sx={{
-                backgroundColor: 'white',
+                backgroundColor: 'rgba(255, 240, 246, 0.2)',
                 p: 4
               }}
             >
@@ -202,7 +205,7 @@ const Highlights = () => {
                     width: 100,
                     height: 100,
                     fontSize: '3rem',
-                    backgroundColor: '#fff0f6',
+                    backgroundColor: 'rgba(255, 107, 152, 0.15)',
                     border: '3px solid #fff',
                     boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
                     mt: 2
@@ -218,14 +221,16 @@ const Highlights = () => {
                       sx={{
                         p: 2,
                         mb: 2,
-                        backgroundColor: '#fff0f6',
+                        backgroundColor: 'rgba(255, 107, 152, 0.1)',
                         color: theme.palette.text.primary,
                         borderRadius: 3,
-                        boxShadow: '0 3px 8px rgba(0,0,0,0.05)',
+                        boxShadow: '0 4px 10px rgba(255, 107, 152, 0.15)',
                         transition: 'transform 0.2s',
+                        border: '1px solid rgba(255, 107, 152, 0.1)',
                         '&:hover': {
                           transform: 'translateY(-3px)',
-                          boxShadow: '0 6px 12px rgba(0,0,0,0.1)'
+                          boxShadow: '0 6px 15px rgba(255, 107, 152, 0.25)',
+                          backgroundColor: 'rgba(255, 107, 152, 0.15)'
                         }
                       }}
                     >
@@ -233,7 +238,9 @@ const Highlights = () => {
                         variant="body1" 
                         sx={{ 
                           fontFamily: 'Nunito, sans-serif',
-                          fontWeight: 500 
+                          fontWeight: 600,
+                          fontSize: '1.1rem',
+                          textAlign: 'center'
                         }}
                       >
                         {item}

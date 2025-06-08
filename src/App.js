@@ -47,47 +47,49 @@ const theme = createTheme({
       'Arial',
       'sans-serif',
     ].join(','),
+    fontSize: 16, // Aumentamos el tamaño base de fuente
     h1: {
       fontWeight: 700,
-      fontSize: '2.5rem',
+      fontSize: '3.8rem',
     },
     h2: {
       fontWeight: 600,
-      fontSize: '2rem',
+      fontSize: '3rem',
     },
     h3: {
       fontWeight: 600,
-      fontSize: '1.5rem',
+      fontSize: '2.5rem',
     },
     h4: {
       fontWeight: 600,
-      fontSize: '1.25rem',
+      fontSize: '2rem',
     },
     h5: {
       fontWeight: 600,
-      fontSize: '1rem',
+      fontSize: '1.5rem',
     },
     h6: {
       fontWeight: 600,
-      fontSize: '0.875rem',
+      fontSize: '1.25rem',
     },
     subtitle1: {
-      fontSize: '1rem',
+      fontSize: '1.3rem',
       fontWeight: 500,
     },
     subtitle2: {
-      fontSize: '0.875rem',
+      fontSize: '1.2rem',
       fontWeight: 500,
     },
     body1: {
-      fontSize: '1rem',
+      fontSize: '1.2rem',
     },
     body2: {
-      fontSize: '0.875rem',
+      fontSize: '1.1rem',
     },
     button: {
       textTransform: 'none', // Botones sin texto en mayúsculas
       fontWeight: 600,
+      fontSize: '1.2rem',
     },
   },
   shape: {
@@ -98,6 +100,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 20, // Botones más redondeados al estilo Instagram
+          fontSize: '1.2rem',
         },
         containedPrimary: {
           boxShadow: 'none', // Sin sombras para botones primarios
@@ -110,15 +113,23 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          boxShadow: '0 1px 5px rgba(0, 0, 0, 0.05)', // Sombras suaves para elementos Paper
+          boxShadow: '0 5px 15px rgba(255, 107, 152, 0.25)', // Sombras rosas para todos los elementos Paper
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 1px 5px rgba(0, 0, 0, 0.05)', // Sombras suaves para tarjetas
+          boxShadow: '0 5px 15px rgba(255, 107, 152, 0.25)', // Sombras rosas para tarjetas
           overflow: 'hidden',
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          // Aseguramos que todos los textos tengan un tamaño mínimo
+          fontSize: '1.2rem',
         },
       },
     },

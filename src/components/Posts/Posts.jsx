@@ -452,18 +452,20 @@ const Posts = () => {
       )}
       
       <Typography 
-        variant="h5" 
+        variant="h4" 
         sx={{ 
           mb: 4, 
-          fontWeight: 'medium', 
+          fontWeight: 'bold', 
           fontFamily: 'Pacifico, cursive',
-          color: theme.palette.primary.main
+          color: theme.palette.primary.main,
+          fontSize: '2.5rem',
+          textAlign: 'center'
         }}
       >
-        Publicaciones
+        Mis Proyectos
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={4}>
         {posts.map((post) => (
           <Grid item xs={12} sm={6} md={4} key={post.id}>
             <Card
@@ -471,11 +473,11 @@ const Posts = () => {
                 cursor: 'pointer',
                 borderRadius: 4,
                 overflow: 'hidden',
-                boxShadow: '0 8px 20px rgba(0,0,0,0.06)',
+                boxShadow: '0 8px 20px rgba(255, 107, 152, 0.25)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-10px) scale(1.02)',
-                  boxShadow: '0 12px 28px rgba(0,0,0,0.1)'
+                  boxShadow: '0 12px 28px rgba(255, 107, 152, 0.4)'
                 }
               }}
               onClick={() => handlePostClick(post)}
@@ -515,7 +517,7 @@ const Posts = () => {
                 color: 'white'
               }}
             >
-              <Typography variant="h6" sx={{ fontFamily: 'Pacifico, cursive' }}>
+              <Typography variant="h5" sx={{ fontFamily: 'Pacifico, cursive', fontSize: '1.7rem' }}>
                 {selectedPost.title}
               </Typography>
               <IconButton
@@ -555,7 +557,8 @@ const Posts = () => {
                         sx={{ 
                           fontFamily: 'Nunito, sans-serif',
                           fontWeight: 'bold',
-                          color: theme.palette.primary.dark 
+                          color: theme.palette.primary.dark,
+                          fontSize: '1.4rem'
                         }}
                       >
                         {selectedPost.title}
@@ -563,7 +566,7 @@ const Posts = () => {
                       <Typography 
                         variant="subtitle2" 
                         color="text.secondary"
-                        sx={{ fontFamily: 'Nunito, sans-serif' }}
+                        sx={{ fontFamily: 'Nunito, sans-serif', fontSize: '1.1rem' }}
                       >
                         {selectedPost.date_start ? 
                           new Date(selectedPost.date_start).toLocaleDateString('es-ES', {year: 'numeric', month: 'long'}) : 
@@ -572,13 +575,14 @@ const Posts = () => {
                     </Box>
 
                     <Typography 
-                      variant="body2" 
+                      variant="body1" 
                       paragraph
                       sx={{ 
                         mb: 3, 
                         flexGrow: 1,
                         fontFamily: 'Nunito, sans-serif',
-                        lineHeight: 1.6 
+                        lineHeight: 1.6,
+                        fontSize: '1.2rem'
                       }}
                     >
                       {selectedPost.description}
@@ -587,18 +591,22 @@ const Posts = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                       <Button
                         startIcon={<GitHub />}
-                        variant="outlined"
+                        variant="contained"
                         color="primary"
-                        size="small"
+                        size="large"
                         href={selectedPost.repoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         sx={{ 
                           borderRadius: 30,
                           fontFamily: 'Nunito, sans-serif',
+                          fontSize: '1.1rem',
+                          fontWeight: 'bold',
+                          px: 3,
+                          py: 1,
                           '&:hover': {
                             transform: 'translateY(-3px)',
-                            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)'
+                            boxShadow: '0 8px 15px rgba(255, 107, 152, 0.3)'
                           },
                           transition: 'all 0.3s ease'
                         }}
@@ -613,16 +621,17 @@ const Posts = () => {
                             handleLike(selectedPost.id);
                           }}
                           color="primary"
+                          size="large"
                         >
                           {selectedPost.liked ? <Favorite /> : <FavoriteBorder />}
                         </IconButton>
-                        <Typography variant="body2" sx={{ mr: 2, fontFamily: 'Nunito, sans-serif' }}>
+                        <Typography variant="body1" sx={{ mr: 2, fontFamily: 'Nunito, sans-serif', fontSize: '1.1rem' }}>
                           {selectedPost.likes}
                         </Typography>
-                        <IconButton color="primary">
+                        <IconButton color="primary" size="large">
                           <Comment />
                         </IconButton>
-                        <Typography variant="body2" sx={{ fontFamily: 'Nunito, sans-serif' }}>
+                        <Typography variant="body1" sx={{ fontFamily: 'Nunito, sans-serif', fontSize: '1.1rem' }}>
                           {selectedPost.commentsData ? selectedPost.commentsData.length : 0}
                         </Typography>
                       </Box>
@@ -631,11 +640,13 @@ const Posts = () => {
                     <Divider sx={{ my: 2 }} />
                     
                     <Typography 
-                      variant="subtitle2" 
+                      variant="subtitle1" 
                       gutterBottom
                       sx={{ 
                         fontWeight: 'bold',
-                        fontFamily: 'Nunito, sans-serif' 
+                        fontFamily: 'Nunito, sans-serif',
+                        fontSize: '1.3rem',
+                        color: theme.palette.primary.main
                       }}
                     >
                       Comentarios
@@ -674,33 +685,23 @@ const Posts = () => {
                                 <Typography 
                                   variant="subtitle2" 
                                   component="span"
-                                  sx={{ fontFamily: 'Nunito, sans-serif', fontWeight: 'bold' }}
+                                  sx={{ fontFamily: 'Nunito, sans-serif', fontWeight: 'bold', fontSize: '1.1rem' }}
                                 >
                                   {comment.author}
                                 </Typography>
                               }
                               secondary={
-                                <>
-                                  <Typography 
-                                    variant="body2" 
-                                    component="span" 
-                                    sx={{ display: 'block', fontFamily: 'Nunito, sans-serif' }}
-                                  >
-                                    {comment.text}
-                                  </Typography>
-                                  <Typography 
-                                    variant="caption" 
-                                    color="text.secondary"
-                                    sx={{ fontFamily: 'Nunito, sans-serif' }}
-                                  >
-                                    {comment.created_at ? 
-                                      new Date(comment.created_at).toLocaleDateString('es-ES', {
-                                        year: 'numeric', 
-                                        month: 'short', 
-                                        day: 'numeric'
-                                      }) : 'Ahora'}
-                                  </Typography>
-                                </>
+                                <Typography 
+                                  variant="body2" 
+                                  component="span" 
+                                  sx={{ 
+                                    display: 'inline',
+                                    fontFamily: 'Nunito, sans-serif',
+                                    fontSize: '1rem'
+                                  }}
+                                >
+                                  {comment.text}
+                                </Typography>
                               }
                             />
                           </ListItem>
@@ -708,11 +709,12 @@ const Posts = () => {
                       ) : (
                         <Typography 
                           variant="body2" 
+                          color="text.secondary" 
                           sx={{ 
-                            textAlign: 'center', 
-                            fontStyle: 'italic',
-                            color: 'text.secondary',
-                            py: 2
+                            py: 2, 
+                            textAlign: 'center',
+                            fontFamily: 'Nunito, sans-serif',
+                            fontSize: '1.1rem'
                           }}
                         >
                           No hay comentarios aún. ¡Sé el primero en comentar!
@@ -723,24 +725,24 @@ const Posts = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <TextField
                         fullWidth
-                        placeholder="Añade un comentario..."
+                        placeholder="Añadir un comentario..."
                         variant="outlined"
                         size="small"
                         value={newComment}
                         onChange={handleCommentChange}
-                        InputProps={{
-                          sx: { 
-                            borderRadius: 30,
-                            fontFamily: 'Nunito, sans-serif',
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                        sx={{ 
+                          mr: 1,
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 4,
+                            fontSize: '1.1rem'
                           }
                         }}
-                        sx={{ mr: 1 }}
                       />
                       <IconButton 
-                        color="primary" 
-                        disabled={!newComment.trim()}
+                        color="primary"
                         onClick={() => handleAddComment(selectedPost.id)}
+                        disabled={!newComment.trim()}
+                        size="large"
                       >
                         <Send />
                       </IconButton>
@@ -753,6 +755,7 @@ const Posts = () => {
         )}
       </Dialog>
       
+      {/* Menu for comment actions */}
       <Menu
         anchorEl={commentAnchorEl}
         open={Boolean(commentAnchorEl)}
@@ -765,14 +768,26 @@ const Posts = () => {
           <ListItemText>Eliminar comentario</ListItemText>
         </MenuItem>
       </Menu>
-
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={6000} 
+      
+      {/* Snackbar para notificaciones */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+        <Alert 
+          severity={snackbar.severity} 
+          sx={{ 
+            width: '100%',
+            boxShadow: '0 4px 12px rgba(255, 107, 152, 0.3)',
+            fontFamily: 'Nunito, sans-serif',
+            fontWeight: 'medium',
+            backgroundColor: '#ff6b98',
+            color: 'white'
+          }}
+          variant="filled"
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>

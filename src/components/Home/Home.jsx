@@ -73,7 +73,8 @@ const Home = () => {
       title: "Proyectos",
       description: "Descubre los proyectos en los que he trabajado recientemente",
       link: "/posts",
-      color: theme.palette.secondary.main
+      color: theme.palette.secondary.main,
+      buttonLabel: "Explorar"
     },
     { 
       icon: <Star fontSize="large" />,
@@ -124,8 +125,9 @@ const Home = () => {
               fontFamily: 'Pacifico, cursive',
               fontWeight: 'bold',
               color: theme.palette.primary.main,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-              mb: 3
+              textShadow: '2px 2px 6px rgba(255, 107, 152, 0.4)',
+              mb: 3,
+              fontSize: isMobile ? '4rem' : '5.5rem' // Título aún más grande
             }}
           >
             {typedText}
@@ -141,7 +143,8 @@ const Home = () => {
               color: theme.palette.secondary.main, 
               mb: 4,
               fontFamily: 'Nunito, sans-serif',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: isMobile ? '1.5rem' : '1.8rem'
             }}
           >
             Programadora Full Stack
@@ -156,7 +159,8 @@ const Home = () => {
               maxWidth: 800, 
               mb: 5,
               fontFamily: 'Nunito, sans-serif',
-              lineHeight: 1.6
+              lineHeight: 1.6,
+              fontSize: '1.2rem'
             }}
           >
             Bienvenido a mi portfolio interactivo donde podrás descubrir mis proyectos, 
@@ -181,7 +185,9 @@ const Home = () => {
                   transform: 'translateY(-5px)',
                   boxShadow: '0 12px 20px rgba(255, 107, 152, 0.4)',
                 },
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                fontSize: '1.1rem',
+                fontWeight: 'bold'
               }}
             >
               Conocer Más
@@ -201,7 +207,9 @@ const Home = () => {
                   transform: 'translateY(-5px)',
                   boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
                 },
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                fontSize: '1.1rem',
+                fontWeight: 'bold'
               }}
             >
               Ver Proyectos
@@ -219,7 +227,7 @@ const Home = () => {
           }}
           onClick={handleScroll}
         >
-          <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Nunito, sans-serif' }}>Descubre más</Typography>
+          <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Nunito, sans-serif', fontSize: '1.1rem' }}>Descubre más</Typography>
           <KeyboardArrowDown color="primary" fontSize="large" />
         </Box>
       </Box>
@@ -235,18 +243,19 @@ const Home = () => {
               mb: 6, 
               fontWeight: 'bold',
               color: theme.palette.primary.main,
-              fontFamily: 'Pacifico, cursive'
+              fontFamily: 'Pacifico, cursive',
+              fontSize: '2.2rem'
             }}
           >
             Explora Mi Portfolio
           </Typography>
           
-          <Grid container spacing={3}>
+          <Grid container spacing={4}>
             {sections.map((section, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Grow in={animationStep >= 3} timeout={1000 + (index * 200)}>
                   <Paper 
-                    elevation={3} 
+                    elevation={6} 
                     sx={{
                       p: 3,
                       height: '100%',
@@ -258,44 +267,80 @@ const Home = () => {
                       transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                       '&:hover': {
                         transform: 'translateY(-10px)',
-                        boxShadow: '0 12px 20px rgba(0, 0, 0, 0.1)',
+                        boxShadow: '0 12px 25px rgba(255, 107, 152, 0.4)',
                       },
+                      boxShadow: '0 8px 20px rgba(255, 107, 152, 0.3)', // Sombreado rosa más intenso
+                      border: `1px solid rgba(255, 107, 152, 0.1)` // Borde sutil rosa
                     }}
                   >
                     <Box 
                       sx={{ 
-                        width: 60, 
-                        height: 60, 
+                        width: 70, 
+                        height: 70, 
                         borderRadius: '50%', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center',
-                        bgcolor: `${section.color}20`,
-                        color: section.color,
-                        mb: 2
+                        bgcolor: index === 1 ? 'rgba(255, 107, 152, 0.3)' : `${section.color}20`,
+                        color: index === 1 ? '#ff4f86' : section.color,
+                        mb: 2,
+                        boxShadow: '0 5px 12px rgba(255, 107, 152, 0.35)', // Sombreado rosa más intenso
+                        border: `2px solid ${index === 1 ? '#ff6b98' : 'rgba(255, 107, 152, 0.2)'}`
                       }}
                     >
                       {section.icon}
                     </Box>
-                    <Typography variant="h6" component="h3" gutterBottom fontFamily="Nunito, sans-serif" fontWeight="bold">
+                    <Typography 
+                      variant="h6" 
+                      component="h3" 
+                      gutterBottom 
+                      fontFamily="Nunito, sans-serif" 
+                      fontWeight="bold"
+                      sx={{ fontSize: '1.3rem' }}
+                    >
                       {section.title}
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 3, flexGrow: 1 }} fontFamily="Nunito, sans-serif">
+                    <Typography 
+                      variant="body2" 
+                      sx={{ mb: 3, flexGrow: 1, fontSize: '1.05rem' }}
+                      fontFamily="Nunito, sans-serif"
+                    >
                       {section.description}
                     </Typography>
                     <Button 
-                      variant="text" 
+                      variant="contained" 
                       component={RouterLink}
                       to={section.link}
                       sx={{ 
-                        color: section.color,
+                        color: 'white',
+                        backgroundColor: section.color,
                         '&:hover': {
-                          bgcolor: `${section.color}10`,
+                          backgroundColor: section.color,
+                          filter: 'brightness(1.1)',
+                          transform: 'translateY(-3px)',
+                          boxShadow: '0 8px 15px rgba(0, 0, 0, 0.1)'
                         },
-                        fontFamily: 'Nunito, sans-serif'
+                        fontFamily: 'Nunito, sans-serif',
+                        fontSize: '1.05rem',
+                        fontWeight: 'bold',
+                        borderRadius: '25px',
+                        px: 3,
+                        py: 1,
+                        ...(index === 1 && {
+                          backgroundColor: '#ff6b98',
+                          color: 'white',
+                          boxShadow: '0 5px 15px rgba(255, 107, 152, 0.4)',
+                          fontSize: '1.1rem',
+                          py: 1.2,
+                          '&:hover': {
+                            backgroundColor: '#ff4f86',
+                            transform: 'translateY(-3px)',
+                            boxShadow: '0 8px 20px rgba(255, 107, 152, 0.5)'
+                          }
+                        })
                       }}
                     >
-                      Explorar
+                      {section.buttonLabel || "Explorar"}
                     </Button>
                   </Paper>
                 </Grow>
