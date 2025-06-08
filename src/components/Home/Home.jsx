@@ -221,13 +221,14 @@ const Home = () => {
         <Box 
           sx={{ 
             position: 'absolute', 
-            bottom: 40,
+            bottom: 100,
             animation: 'bounce 2s infinite',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            zIndex: 10
           }}
           onClick={handleScroll}
         >
-          <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Nunito, sans-serif', fontSize: '1.1rem' }}>Descubre más</Typography>
+          <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Nunito, sans-serif', fontSize: '1.1rem', fontWeight: 'bold' }}>Descubre más</Typography>
           <KeyboardArrowDown color="primary" fontSize="large" />
         </Box>
       </Box>

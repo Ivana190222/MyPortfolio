@@ -336,7 +336,7 @@ const Posts = () => {
       id: Date.now(), // ID único basado en timestamp
       author: "Visitante",
       text: commentText,
-      avatar_url: "/ivana-photo.jpeg",
+      avatar_url: "", // Usaremos la inicial en lugar de una foto
       created_at: now.toISOString(),
       isYours: true
     };
@@ -442,12 +442,6 @@ const Posts = () => {
       {error && (
         <Alert severity="info" sx={{ mb: 2 }}>
           {error}
-        </Alert>
-      )}
-      
-      {isNetlify && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Ejecutando en modo de demostración. La interactividad con likes y comentarios está simulada.
         </Alert>
       )}
       
@@ -646,7 +640,7 @@ const Posts = () => {
                         fontWeight: 'bold',
                         fontFamily: 'Nunito, sans-serif',
                         fontSize: '1.3rem',
-                        color: theme.palette.primary.main
+                        color: '#ff6b98'
                       }}
                     >
                       Comentarios
@@ -659,11 +653,13 @@ const Posts = () => {
                             key={comment.id}
                             alignItems="flex-start"
                             sx={{ 
-                              py: 1, 
-                              px: 2,
-                              borderRadius: 2,
-                              mb: 1,
-                              backgroundColor: 'rgba(255, 107, 152, 0.05)'
+                              py: 1.5, 
+                              px: 3,
+                              borderRadius: 3,
+                              mb: 2,
+                              backgroundColor: 'rgba(255, 107, 152, 0.08)',
+                              boxShadow: '0 2px 8px rgba(255, 107, 152, 0.15)',
+                              border: '1px solid rgba(255, 107, 152, 0.1)'
                             }}
                             secondaryAction={
                               comment.isYours && (
@@ -678,26 +674,43 @@ const Posts = () => {
                             }
                           >
                             <ListItemAvatar>
-                              <Avatar src={comment.avatar_url} alt={comment.author} />
+                              <Avatar 
+                                src={comment.avatar_url} 
+                                alt={comment.author}
+                                sx={{ 
+                                  width: 45, 
+                                  height: 45,
+                                  border: '2px solid rgba(255, 107, 152, 0.3)'
+                                }} 
+                              />
                             </ListItemAvatar>
                             <ListItemText
                               primary={
-                                <Typography 
-                                  variant="subtitle2" 
-                                  component="span"
-                                  sx={{ fontFamily: 'Nunito, sans-serif', fontWeight: 'bold', fontSize: '1.1rem' }}
-                                >
-                                  {comment.author}
-                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                                  <Typography 
+                                    variant="subtitle2" 
+                                    component="span"
+                                    sx={{ 
+                                      fontFamily: 'Nunito, sans-serif', 
+                                      fontWeight: 'bold', 
+                                      fontSize: '1.1rem',
+                                      color: '#ff6b98'
+                                    }}
+                                  >
+                                    {comment.author}
+                                  </Typography>
+                                </Box>
                               }
                               secondary={
                                 <Typography 
                                   variant="body2" 
                                   component="span" 
                                   sx={{ 
-                                    display: 'inline',
+                                    display: 'block',
                                     fontFamily: 'Nunito, sans-serif',
-                                    fontSize: '1rem'
+                                    fontSize: '1rem',
+                                    color: 'text.primary',
+                                    mt: 0.5
                                   }}
                                 >
                                   {comment.text}
@@ -706,46 +719,62 @@ const Posts = () => {
                             />
                           </ListItem>
                         ))
-                      ) : (
-                        <Typography 
-                          variant="body2" 
-                          color="text.secondary" 
-                          sx={{ 
-                            py: 2, 
-                            textAlign: 'center',
-                            fontFamily: 'Nunito, sans-serif',
-                            fontSize: '1.1rem'
-                          }}
-                        >
-                          No hay comentarios aún. ¡Sé el primero en comentar!
-                        </Typography>
-                      )}
+                      ) : null}
                     </List>
                     
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <TextField
-                        fullWidth
-                        placeholder="Añadir un comentario..."
-                        variant="outlined"
-                        size="small"
-                        value={newComment}
-                        onChange={handleCommentChange}
-                        sx={{ 
-                          mr: 1,
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: 4,
-                            fontSize: '1.1rem'
-                          }
-                        }}
-                      />
-                      <IconButton 
-                        color="primary"
-                        onClick={() => handleAddComment(selectedPost.id)}
-                        disabled={!newComment.trim()}
-                        size="large"
-                      >
-                        <Send />
-                      </IconButton>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(255, 107, 152, 0.05)',
+                        p: 1,
+                        borderRadius: 4,
+                        border: '1px solid rgba(255, 107, 152, 0.1)'
+                      }}>
+                        <Avatar 
+                          sx={{ 
+                            width: 36, 
+                            height: 36, 
+                            mr: 1.5,
+                            bgcolor: '#ff6b98',
+                            fontSize: '1rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          V
+                        </Avatar>
+                        <TextField
+                          fullWidth
+                          placeholder="Añadir un comentario..."
+                          variant="standard"
+                          size="small"
+                          value={newComment}
+                          onChange={handleCommentChange}
+                          sx={{ 
+                            '& .MuiInput-root': {
+                              fontSize: '1.1rem',
+                              fontFamily: 'Nunito, sans-serif',
+                              '&:before, &:after': {
+                                display: 'none'
+                              }
+                            }
+                          }}
+                        />
+                        <IconButton 
+                          color="primary"
+                          onClick={() => handleAddComment(selectedPost.id)}
+                          disabled={!newComment.trim()}
+                          size="large"
+                          sx={{
+                            color: '#ff6b98',
+                            '&.Mui-disabled': {
+                              color: 'rgba(255, 107, 152, 0.3)'
+                            }
+                          }}
+                        >
+                          <Send />
+                        </IconButton>
+                      </Box>
                     </Box>
                   </Box>
                 </Grid>
