@@ -14,12 +14,21 @@ import {
   useTheme,
   Tooltip
 } from '@mui/material';
-import { Email, LinkedIn } from '@mui/icons-material';
+import { Email, LinkedIn, Phone } from '@mui/icons-material';
 
 const Followers = () => {
   const theme = useTheme();
   
   const followers = [
+    {
+      id: 0,
+      name: "Escuela Técnica N°3 Nikola Tesla",
+      role: "Profesora",
+      avatar: "/tecnica3.jpeg",
+      email: "mt075003@abc.gov.ar",
+      telefono: "02262 42-2626",
+      description: "Actualmente ejerzo como profesora en esta institución educativa, donde tengo a cargo 4 cursos especializados en programación y desarrollo web. Imparto las materias de DWD (Diseño Web de Aplicaciones Dinámicas) enseñando PHP y Base de Datos, DWE (Diseño Web de Aplicaciones Estáticas) con HTML, CSS, Bootstrap y Tailwind, y Laboratorio de Programación donde enseño C++. Mi labor se centra en formar técnicos especializados con conocimientos sólidos en desarrollo web y programación."
+    },
     {
       id: 1,
       name: "Nicolas Quintana",
@@ -149,7 +158,37 @@ const Followers = () => {
                         justifyContent: { xs: 'center', sm: 'flex-end' },
                         width: { sm: '40%' }
                       }}>
-                        {follower.id === 3 ? (
+                        {follower.id === 0 ? (
+                          // Botones para Escuela Técnica 3 con teléfono
+                          <>
+                            <Button
+                              startIcon={<Email />}
+                              href={`mailto:${follower.email}`}
+                              size="small"
+                              sx={{ 
+                                fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                                fontFamily: 'Nunito, sans-serif'
+                              }}
+                              color="primary"
+                              variant="outlined"
+                            >
+                              Email
+                            </Button>
+                            <Button
+                              startIcon={<Phone />}
+                              href={`tel:${follower.telefono}`}
+                              size="small"
+                              sx={{ 
+                                fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                                fontFamily: 'Nunito, sans-serif'
+                              }}
+                              color="primary"
+                              variant="contained"
+                            >
+                              Teléfono
+                            </Button>
+                          </>
+                        ) : follower.id === 3 ? (
                           // Botones más pequeños para Santiago con Tooltip
                           <>
                             <Tooltip title={follower.email}>

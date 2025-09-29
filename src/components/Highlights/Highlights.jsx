@@ -26,17 +26,21 @@ const Highlights = () => {
       items: [
         "HTML",
         "CSS",
+        "Bootstrap",
+        "Tailwind",
         "Javascript",
         "React.js",
+        "Vue.js",
         "Node.js",
         "Express",
         "TypeScript",
         "Next.js",
         "PHP",
         "MySQL",
+        "MongoDB",
         "Git",
         "GitHub",
-        
+
         ]
     },
     {
